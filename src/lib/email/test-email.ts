@@ -20,12 +20,28 @@ export async function testOrderConfirmationEmail() {
         title: 'Test Product 1',
         quantity: 2,
         unit_price: 1499, // $14.99 in cents
+        thumbnail: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop',
+        variant: {
+          product: {
+            images: [
+              { url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop' }
+            ]
+          }
+        }
       },
       {
         id: 'item_2', 
         title: 'Test Product 2',
         quantity: 1,
         unit_price: 1999, // $19.99 in cents
+        thumbnail: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=300&fit=crop',
+        variant: {
+          product: {
+            images: [
+              { url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=300&fit=crop' }
+            ]
+          }
+        }
       },
     ],
     shipping_address: {

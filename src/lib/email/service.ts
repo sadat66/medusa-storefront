@@ -21,6 +21,7 @@ export async function sendOrderConfirmationEmail({
       title: item.title || 'Product',
       quantity: item.quantity,
       price: formatPrice(item.unit_price, order.currency_code),
+      imageUrl: item.thumbnail || item.variant?.product?.images?.[0]?.url,
     })) || []
 
     // Format order total

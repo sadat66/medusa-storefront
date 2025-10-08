@@ -8,6 +8,7 @@ interface OrderConfirmationEmailProps {
     title: string
     quantity: number
     price: string
+    imageUrl?: string
   }>
   shippingAddress: {
     first_name: string
@@ -80,18 +81,41 @@ export const generateOrderConfirmationHTML = ({
         }
         .item {
             display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
+            align-items: center;
+            padding: 15px 0;
             border-bottom: 1px solid #e9ecef;
         }
         .item:last-child {
             border-bottom: none;
         }
+        .item-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-right: 15px;
+            background-color: #f8f9fa;
+        }
+        .item-details {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .item-info {
+            flex: 1;
+        }
         .item-name {
             font-weight: 500;
+            margin-bottom: 5px;
         }
         .item-quantity {
             color: #6b7280;
+            font-size: 14px;
+        }
+        .item-price {
+            font-weight: 500;
+            color: #2563eb;
         }
         .total {
             font-size: 20px;
@@ -153,11 +177,14 @@ export const generateOrderConfirmationHTML = ({
             <h3>Items Ordered</h3>
             ${orderItems.map(item => `
                 <div class="item">
-                    <div>
-                        <div class="item-name">${item.title}</div>
-                        <div class="item-quantity">Quantity: ${item.quantity}</div>
+                    ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.title}" class="item-image" />` : '<div class="item-image" style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 12px;">No Image</div>'}
+                    <div class="item-details">
+                        <div class="item-info">
+                            <div class="item-name">${item.title}</div>
+                            <div class="item-quantity">Quantity: ${item.quantity}</div>
+                        </div>
+                        <div class="item-price">${item.price}</div>
                     </div>
-                    <div>${item.price}</div>
                 </div>
             `).join('')}
         </div>
@@ -212,7 +239,7 @@ Order Details:
 - Status: ${order.status}
 
 Items Ordered:
-${orderItems.map(item => `- ${item.title} (Qty: ${item.quantity}) - ${item.price}`).join('\n')}
+${orderItems.map(item => `- ${item.title} (Qty: ${item.quantity}) - ${item.price}${item.imageUrl ? ` [Image: ${item.imageUrl}]` : ''}`).join('\n')}
 
 Total: ${orderTotal}
 

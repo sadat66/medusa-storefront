@@ -135,7 +135,7 @@ export async function addToCart({
     ...(await getAuthHeaders()),
   }
 
-  await sdk.store.cart
+  return await sdk.store.cart
     .createLineItem(
       cart.id,
       {
@@ -145,12 +145,14 @@ export async function addToCart({
       {},
       headers
     )
-    .then(async () => {
+    .then(async ({ cart: updatedCart }) => {
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag)
 
       const fulfillmentCacheTag = await getCacheTag("fulfillment")
       revalidateTag(fulfillmentCacheTag)
+
+      return updatedCart
     })
     .catch(medusaError)
 }
@@ -176,14 +178,16 @@ export async function updateLineItem({
     ...(await getAuthHeaders()),
   }
 
-  await sdk.store.cart
+  return await sdk.store.cart
     .updateLineItem(cartId, lineId, { quantity }, {}, headers)
-    .then(async () => {
+    .then(async ({ cart: updatedCart }) => {
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag)
 
       const fulfillmentCacheTag = await getCacheTag("fulfillment")
       revalidateTag(fulfillmentCacheTag)
+
+      return updatedCart
     })
     .catch(medusaError)
 }
@@ -203,14 +207,16 @@ export async function deleteLineItem(lineId: string) {
     ...(await getAuthHeaders()),
   }
 
-  await sdk.store.cart
+  return await sdk.store.cart
     .deleteLineItem(cartId, lineId, headers)
-    .then(async () => {
+    .then(async ({ cart: updatedCart }) => {
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag)
 
       const fulfillmentCacheTag = await getCacheTag("fulfillment")
       revalidateTag(fulfillmentCacheTag)
+
+      return updatedCart
     })
     .catch(medusaError)
 }

@@ -9,14 +9,9 @@ import { HttpTypes } from "@medusajs/types"
 const OrderOverview = ({ orders }: { orders: HttpTypes.StoreOrder[] }) => {
   if (orders?.length) {
     return (
-      <div className="flex flex-col gap-y-8 w-full">
+      <div className="flex flex-col gap-y-6 w-full">
         {orders.map((o) => (
-          <div
-            key={o.id}
-            className="border-b border-gray-200 pb-6 last:pb-0 last:border-none"
-          >
-            <OrderCard order={o} />
-          </div>
+          <OrderCard key={o.id} order={o} />
         ))}
       </div>
     )
@@ -24,17 +19,25 @@ const OrderOverview = ({ orders }: { orders: HttpTypes.StoreOrder[] }) => {
 
   return (
     <div
-      className="w-full flex flex-col items-center gap-y-4"
+      className="w-full flex flex-col items-center gap-y-6 bg-blue-50 rounded-lg p-8 text-center"
       data-testid="no-orders-container"
     >
-      <h2 className="text-large-semi">Nothing to see here</h2>
-      <p className="text-base-regular">
-        You don&apos;t have any orders yet, let us change that {":)"}
-      </p>
-      <div className="mt-4">
+      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+        <span className="text-2xl">📦</span>
+      </div>
+      <div>
+        <h2 className="text-xl font-semibold text-blue-900 mb-2">No orders yet</h2>
+        <p className="text-gray-600">
+          You don&apos;t have any orders yet, let us change that {":)"}
+        </p>
+      </div>
+      <div>
         <LocalizedClientLink href="/" passHref>
-          <Button data-testid="continue-shopping-button">
-            Continue shopping
+          <Button 
+            data-testid="continue-shopping-button"
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            Start Shopping
           </Button>
         </LocalizedClientLink>
       </div>

@@ -1,6 +1,7 @@
 "use client"
 
 import { addToCart } from "@lib/data/cart"
+import { useCart } from "@lib/context/cart-context"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@medusajs/ui"
@@ -34,6 +35,7 @@ export default function ProductActions({
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
   const countryCode = useParams().countryCode as string
+  const { refreshCart } = useCart()
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
@@ -104,13 +106,20 @@ export default function ProductActions({
 
     setIsAdding(true)
 
-    await addToCart({
-      variantId: selectedVariant.id,
-      quantity: 1,
-      countryCode,
-    })
-
-    setIsAdding(false)
+    try {
+      await addToCart({
+        variantId: selectedVariant.id,
+        quantity: 1,
+        countryCode,
+      })
+      
+      // Refresh cart state after successful addition
+      await refreshCart()
+    } catch (error) {
+      console.error("Failed to add to cart:", error)
+    } finally {
+      setIsAdding(false)
+    }
   }
 
   return (

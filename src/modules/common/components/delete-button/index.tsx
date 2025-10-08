@@ -1,4 +1,7 @@
+"use client"
+
 import { deleteLineItem } from "@lib/data/cart"
+import { useCart } from "@lib/context/cart-context"
 import { Spinner, Trash } from "@medusajs/icons"
 import { clx } from "@medusajs/ui"
 import { useState } from "react"
@@ -13,12 +16,19 @@ const DeleteButton = ({
   className?: string
 }) => {
   const [isDeleting, setIsDeleting] = useState(false)
+  const { refreshCart } = useCart()
 
   const handleDelete = async (id: string) => {
     setIsDeleting(true)
-    await deleteLineItem(id).catch((err) => {
+    try {
+      await deleteLineItem(id)
+      // Refresh cart state after successful deletion
+      await refreshCart()
+    } catch (err) {
+      console.error("Failed to delete item:", err)
+    } finally {
       setIsDeleting(false)
-    })
+    }
   }
 
   return (
