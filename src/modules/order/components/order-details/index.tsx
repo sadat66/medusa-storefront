@@ -1,5 +1,6 @@
 import { HttpTypes } from "@medusajs/types"
 import { Text } from "@medusajs/ui"
+import { formatOrderStatusForEmail } from "@lib/util/order-status"
 
 type OrderDetailsProps = {
   order: HttpTypes.StoreOrder
@@ -8,8 +9,10 @@ type OrderDetailsProps = {
 
 const OrderDetails = ({ order, showStatus }: OrderDetailsProps) => {
   const formatStatus = (str: string) => {
+    if (str === 'not_fulfilled' || str === 'pending') {
+      return 'Pending'
+    }
     const formatted = str.split("_").join(" ")
-
     return formatted.slice(0, 1).toUpperCase() + formatted.slice(1)
   }
 
