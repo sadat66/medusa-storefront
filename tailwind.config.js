@@ -34,6 +34,97 @@ module.exports = {
           80: "#1F2937",
           90: "#111827",
         },
+        // Override Medusa UI colors with blue theme
+        ui: {
+          fg: {
+            base: "#1e40af", // blue-800
+            subdued: "#3b82f6", // blue-500
+            muted: "#60a5fa", // blue-400
+            disabled: "#93c5fd", // blue-300
+            on: {
+              color: "#ffffff",
+              dark: "#ffffff",
+              inverted: "#1e40af",
+            },
+          },
+          bg: {
+            base: "#ffffff",
+            elevated: "#f8fafc", // slate-50
+            elevated: {
+              hover: "#f1f5f9", // slate-100
+            },
+            subdued: "#f8fafc", // slate-50
+            disabled: "#f1f5f9", // slate-100
+            interactive: {
+              base: "#ffffff",
+              hover: "#f8fafc", // slate-50
+              active: "#f1f5f9", // slate-100
+              selected: "#dbeafe", // blue-100
+              disabled: "#f1f5f9", // slate-100
+            },
+            component: {
+              base: "#ffffff",
+              hover: "#f8fafc", // slate-50
+              active: "#f1f5f9", // slate-100
+              selected: "#dbeafe", // blue-100
+              disabled: "#f1f5f9", // slate-100
+            },
+            overlay: "rgba(0, 0, 0, 0.5)",
+            badge: {
+              neutral: "#f1f5f9", // slate-100
+              base: "#dbeafe", // blue-100
+            },
+            tag: {
+              neutral: {
+                base: "#f1f5f9", // slate-100
+                hover: "#e2e8f0", // slate-200
+              },
+              base: {
+                base: "#dbeafe", // blue-100
+                hover: "#bfdbfe", // blue-200
+              },
+            },
+          },
+          border: {
+            base: "#e2e8f0", // slate-200
+            strong: "#cbd5e1", // slate-300
+            interactive: {
+              base: "#cbd5e1", // slate-300
+              hover: "#94a3b8", // slate-400
+              active: "#1e40af", // blue-800
+              disabled: "#e2e8f0", // slate-200
+            },
+            error: "#ef4444", // red-500
+            success: "#22c55e", // green-500
+            warning: "#f59e0b", // amber-500
+          },
+          button: {
+            primary: {
+              base: "#1e40af", // blue-800
+              hover: "#1d4ed8", // blue-700
+              active: "#1e3a8a", // blue-900
+              disabled: "#93c5fd", // blue-300
+            },
+            secondary: {
+              base: "#ffffff",
+              hover: "#f8fafc", // slate-50
+              active: "#f1f5f9", // slate-100
+              disabled: "#f1f5f9", // slate-100
+            },
+            transparent: {
+              base: "transparent",
+              hover: "#f8fafc", // slate-50
+              active: "#f1f5f9", // slate-100
+              disabled: "transparent",
+            },
+            danger: {
+              base: "#ef4444", // red-500
+              hover: "#dc2626", // red-600
+              active: "#b91c1c", // red-700
+              disabled: "#fca5a5", // red-300
+            },
+          },
+        },
       },
       borderRadius: {
         none: "0px",

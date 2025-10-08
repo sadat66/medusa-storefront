@@ -44,7 +44,7 @@ export default function CountrySelector({ regions, className = "" }: CountrySele
     <div className={`relative ${className}`}>
       <Listbox value={selected} onChange={handleChange}>
         <div className="relative">
-          <ListboxButton className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-md shadow-sm cursor-default focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          <ListboxButton className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-blue-300 rounded-md shadow-sm cursor-default focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
             <span className="flex items-center">
               {selected && (
                 <>
@@ -57,7 +57,7 @@ export default function CountrySelector({ regions, className = "" }: CountrySele
                 </>
               )}
               {!selected && (
-                <span className="block truncate text-gray-500">Select country</span>
+                <span className="block truncate text-blue-500">Select country</span>
               )}
             </span>
           </ListboxButton>
@@ -74,7 +74,7 @@ export default function CountrySelector({ regions, className = "" }: CountrySele
                   value={option}
                   className={({ active }) =>
                     `relative cursor-default select-none py-2 pl-3 pr-9 ${
-                      active ? "text-blue-900 bg-blue-100" : "text-gray-900"
+                      active ? "text-blue-900 bg-blue-100" : "text-blue-900"
                     }`
                   }
                 >

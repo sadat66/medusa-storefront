@@ -27,7 +27,7 @@ export default function ClientCartButton() {
 
   if (isLoading) {
     return (
-      <div className="text-sm font-medium text-gray-700">
+      <div className="text-sm font-medium text-blue-700">
         Cart (0)
       </div>
     )

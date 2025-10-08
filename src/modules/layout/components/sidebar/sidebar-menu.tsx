@@ -111,7 +111,7 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
             {/* Footer */}
             <div className="p-6 border-t border-blue-200">
               <p className="text-sm text-blue-600 text-center">
-                © {new Date().getFullYear()} Medusa Store. All rights reserved.
+                © {new Date().getFullYear()} TechStore. All rights reserved.
               </p>
             </div>
           </div>
