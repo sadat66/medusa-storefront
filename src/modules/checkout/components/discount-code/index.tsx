@@ -2,8 +2,9 @@
 
 import { Badge, Heading, Input, Label, Text } from "@medusajs/ui"
 import React from "react"
+import { useRouter } from "next/navigation"
 
-import { applyPromotions } from "@lib/data/cart"
+import { applyPromotions, submitPromotionForm } from "@lib/data/cart"
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 import Trash from "@modules/common/icons/trash"
@@ -19,6 +20,8 @@ type DiscountCodeProps = {
 const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
   const [isOpen, setIsOpen] = React.useState(false)
   const [errorMessage, setErrorMessage] = React.useState("")
+  const [isLoading, setIsLoading] = React.useState(false)
+  const router = useRouter()
 
   const { promotions = [] } = cart
   const removePromotionCode = async (code: string) => {
@@ -29,36 +32,40 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
     await applyPromotions(
       validPromotions.filter((p) => p.code !== undefined).map((p) => p.code!)
     )
+    
+    // Refresh the page to show updated cart data
+    router.refresh()
   }
 
-  const addPromotionCode = async (formData: FormData) => {
+  const handleSubmitPromotion = async (formData: FormData) => {
+    setIsLoading(true)
     setErrorMessage("")
-
-    const code = formData.get("code")
-    if (!code) {
-      return
-    }
-    const input = document.getElementById("promotion-input") as HTMLInputElement
-    const codes = promotions
-      .filter((p) => p.code !== undefined)
-      .map((p) => p.code!)
-    codes.push(code.toString())
-
+    
     try {
-      await applyPromotions(codes)
-    } catch (e: any) {
-      setErrorMessage(e.message)
-    }
-
-    if (input) {
-      input.value = ""
+      const result = await submitPromotionForm(null, formData)
+      if (result) {
+        setErrorMessage(result)
+      } else {
+        // Success - refresh the page
+        router.refresh()
+        // Clear the input
+        const input = document.getElementById("promotion-input") as HTMLInputElement
+        if (input) {
+          input.value = ""
+        }
+      }
+    } catch (error: any) {
+      setErrorMessage(error.message || "Failed to apply promotion")
+    } finally {
+      setIsLoading(false)
     }
   }
+
 
   return (
     <div className="w-full bg-white flex flex-col">
       <div className="txt-medium">
-        <form action={(a) => addPromotionCode(a)} className="w-full mb-5">
+        <form action={handleSubmitPromotion} className="w-full mb-5">
           <Label className="flex gap-x-1 my-2 items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -88,8 +95,9 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                 <SubmitButton
                   variant="secondary"
                   data-testid="discount-apply-button"
+                  disabled={isLoading}
                 >
-                  Apply
+                  {isLoading ? "Applying..." : "Apply"}
                 </SubmitButton>
               </div>
 

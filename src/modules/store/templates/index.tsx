@@ -7,7 +7,7 @@ import SearchBar from "@modules/common/components/search-bar"
 
 import PaginatedProducts from "./paginated-products"
 
-const StoreTemplate = ({
+const StoreTemplate = async ({
   sortBy,
   page,
   countryCode,

@@ -23,7 +23,7 @@ import { sendOrderConfirmationEmail } from "@lib/email/service"
  */
 export async function retrieveCart(cartId?: string, fields?: string) {
   const id = cartId || (await getCartId())
-  fields ??= "*items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, *promotions, +shipping_methods.name"
+  fields ??= "*items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, *promotions, +shipping_methods.name, +total, +subtotal, +tax_total, +item_subtotal, +shipping_subtotal, +discount_subtotal"
 
   if (!id) {
     return null
@@ -329,11 +329,21 @@ export async function submitPromotionForm(
   currentState: unknown,
   formData: FormData
 ) {
-  const code = formData.get("code") as string
   try {
+    if (!formData) {
+      return "No form data provided"
+    }
+    
+    const code = formData.get("code") as string
+    if (!code) {
+      return "No promotion code provided"
+    }
+    
     await applyPromotions([code])
+    return null // Success
   } catch (e: any) {
-    return e.message
+    console.error("Promotion application error:", e)
+    return e.message || "Failed to apply promotion"
   }
 }
 
