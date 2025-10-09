@@ -33,7 +33,7 @@ export const listOrders = async (
   limit: number = 10,
   offset: number = 0,
   filters?: Record<string, any>
-) => {
+): Promise<{ orders: HttpTypes.StoreOrder[]; count: number }> => {
   const headers = {
     ...(await getAuthHeaders()),
   }
@@ -56,7 +56,7 @@ export const listOrders = async (
       next,
       cache: "no-store", // Changed from "force-cache" to ensure fresh data
     })
-    .then(({ orders }) => orders)
+    .then(({ orders, count }) => ({ orders, count }))
     .catch((err) => medusaError(err))
 }
 

@@ -5,18 +5,30 @@ import { notFound } from "next/navigation"
 import { listOrders } from "@lib/data/orders"
 import Divider from "@modules/common/components/divider"
 import TransferRequestForm from "@modules/account/components/transfer-request-form"
+import { Pagination } from "@modules/store/components/pagination"
 
 export const metadata: Metadata = {
   title: "Orders",
   description: "Overview of your previous orders.",
 }
 
-export default async function Orders() {
-  const orders = await listOrders()
+const ORDERS_PER_PAGE = 5
+
+export default async function Orders({
+  searchParams,
+}: {
+  searchParams: { page?: string }
+}) {
+  const page = parseInt(searchParams.page || "1")
+  const offset = (page - 1) * ORDERS_PER_PAGE
+
+  const { orders, count } = await listOrders(ORDERS_PER_PAGE, offset)
 
   if (!orders) {
     notFound()
   }
+
+  const totalPages = Math.ceil(count / ORDERS_PER_PAGE)
 
   return (
     <div className="w-full" data-testid="orders-page-wrapper">
@@ -29,6 +41,13 @@ export default async function Orders() {
       </div>
       <div>
         <OrderOverview orders={orders} />
+        {totalPages > 1 && (
+          <Pagination
+            data-testid="orders-pagination"
+            page={page}
+            totalPages={totalPages}
+          />
+        )}
         <Divider className="my-16" />
         <TransferRequestForm />
       </div>

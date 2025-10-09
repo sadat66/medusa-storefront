@@ -10,6 +10,7 @@ import OptionSelect from "@modules/products/components/product-actions/option-se
 import { isEqual } from "lodash"
 import { useParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
+import toast from "react-hot-toast"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
 
@@ -115,8 +116,17 @@ export default function ProductActions({
       
       // Refresh cart state after successful addition
       await refreshCart()
+      
+      // Show success toast
+      toast.success(`${product.title} added to cart!`, {
+        duration: 3000,
+        icon: '🛒',
+      })
     } catch (error) {
       console.error("Failed to add to cart:", error)
+      toast.error("Failed to add item to cart. Please try again.", {
+        duration: 4000,
+      })
     } finally {
       setIsAdding(false)
     }

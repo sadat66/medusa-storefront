@@ -5,6 +5,7 @@ import { useCart } from "@lib/context/cart-context"
 import { Spinner, Trash } from "@medusajs/icons"
 import { clx } from "@medusajs/ui"
 import { useState } from "react"
+import toast from "react-hot-toast"
 
 const DeleteButton = ({
   id,
@@ -24,8 +25,17 @@ const DeleteButton = ({
       await deleteLineItem(id)
       // Refresh cart state after successful deletion
       await refreshCart()
+      
+      // Show success toast
+      toast.success("Item removed from cart", {
+        duration: 3000,
+        icon: '🗑️',
+      })
     } catch (err) {
       console.error("Failed to delete item:", err)
+      toast.error("Failed to remove item. Please try again.", {
+        duration: 4000,
+      })
     } finally {
       setIsDeleting(false)
     }

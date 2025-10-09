@@ -14,11 +14,11 @@ const Login = ({ setCurrentView }: Props) => {
 
   return (
     <div
-      className="max-w-sm w-full flex flex-col items-center"
+      className="w-full flex flex-col items-center"
       data-testid="login-page"
     >
-      <h1 className="text-large-semi uppercase mb-6">Welcome back</h1>
-      <p className="text-center text-base-regular text-ui-fg-base mb-8">
+      <h1 className="text-large-semi uppercase mb-6 text-blue-900">Welcome back</h1>
+      <p className="text-center text-base-regular text-blue-700 mb-8">
         Sign in to access an enhanced shopping experience.
       </p>
       <form className="w-full" action={formAction}>
@@ -46,11 +46,11 @@ const Login = ({ setCurrentView }: Props) => {
           Sign in
         </SubmitButton>
       </form>
-      <span className="text-center text-ui-fg-base text-small-regular mt-6">
+      <span className="text-center text-blue-700 text-small-regular mt-6">
         Not a member?{" "}
         <button
           onClick={() => setCurrentView(LOGIN_VIEW.REGISTER)}
-          className="underline"
+          className="underline text-blue-900 hover:text-blue-700 transition-colors duration-200"
           data-testid="register-button"
         >
           Join us

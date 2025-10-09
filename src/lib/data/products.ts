@@ -134,3 +134,79 @@ export const listProductsWithSort = async ({
     queryParams,
   }
 }
+
+export const searchProducts = async ({
+  query,
+  page = 1,
+  limit = 12,
+  countryCode,
+}: {
+  query: string
+  page?: number
+  limit?: number
+  countryCode: string
+}): Promise<{
+  response: { products: HttpTypes.StoreProduct[]; count: number }
+  nextPage: number | null
+}> => {
+  if (!query.trim()) {
+    return {
+      response: { products: [], count: 0 },
+      nextPage: null,
+    }
+  }
+
+  const region = await getRegion(countryCode)
+  if (!region) {
+    return {
+      response: { products: [], count: 0 },
+      nextPage: null,
+    }
+  }
+
+  const offset = (page - 1) * limit
+
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  const next = {
+    ...(await getCacheOptions("products")),
+  }
+
+  try {
+    const response = await sdk.client.fetch<{ 
+      products: HttpTypes.StoreProduct[]; 
+      count: number;
+      query: string;
+    }>(
+      `/store/search`,
+      {
+        method: "GET",
+        query: {
+          q: query,
+          limit,
+          offset,
+          region_id: region.id,
+        },
+        headers,
+        next,
+        cache: "no-store", // Don't cache search results
+      }
+    )
+
+    const { products, count } = response
+    const nextPage = count > offset + limit ? page + 1 : null
+
+    return {
+      response: { products, count },
+      nextPage,
+    }
+  } catch (error) {
+    console.error("Search error:", error)
+    return {
+      response: { products: [], count: 0 },
+      nextPage: null,
+    }
+  }
+}

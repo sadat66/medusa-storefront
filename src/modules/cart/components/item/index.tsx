@@ -14,6 +14,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Spinner from "@modules/common/icons/spinner"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { useState } from "react"
+import toast from "react-hot-toast"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem
@@ -38,8 +39,17 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
       
       // Refresh cart state after successful update
       await refreshCart()
+      
+      // Show success toast
+      toast.success(`Quantity updated to ${quantity}`, {
+        duration: 2000,
+        icon: '📦',
+      })
     } catch (err) {
       setError(err.message)
+      toast.error("Failed to update quantity. Please try again.", {
+        duration: 4000,
+      })
     } finally {
       setUpdating(false)
     }

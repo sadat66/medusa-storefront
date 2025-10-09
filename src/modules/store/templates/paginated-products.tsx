@@ -1,4 +1,4 @@
-import { listProductsWithSort } from "@lib/data/products"
+import { listProductsWithSort, searchProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import ProductPreview from "@modules/products/components/product-preview"
 import { Pagination } from "@modules/store/components/pagination"
@@ -21,6 +21,7 @@ export default async function PaginatedProducts({
   categoryId,
   productsIds,
   countryCode,
+  searchQuery,
 }: {
   sortBy?: SortOptions
   page: number
@@ -28,41 +29,62 @@ export default async function PaginatedProducts({
   categoryId?: string
   productsIds?: string[]
   countryCode: string
+  searchQuery?: string
 }) {
-  const queryParams: PaginatedProductsParams = {
-    limit: 12,
-  }
-
-  if (collectionId) {
-    queryParams["collection_id"] = [collectionId]
-  }
-
-  if (categoryId) {
-    queryParams["category_id"] = [categoryId]
-  }
-
-  if (productsIds) {
-    queryParams["id"] = productsIds
-  }
-
-  if (sortBy === "created_at") {
-    queryParams["order"] = "created_at"
-  }
-
   const region = await getRegion(countryCode)
 
   if (!region) {
     return null
   }
 
-  let {
-    response: { products, count },
-  } = await listProductsWithSort({
-    page,
-    queryParams,
-    sortBy,
-    countryCode,
-  })
+  let products: any[] = []
+  let count = 0
+  let nextPage: number | null = null
+
+  if (searchQuery) {
+    // Use search functionality
+    const searchResult = await searchProducts({
+      query: searchQuery,
+      page,
+      limit: PRODUCT_LIMIT,
+      countryCode,
+    })
+    products = searchResult.response.products
+    count = searchResult.response.count
+    nextPage = searchResult.nextPage
+  } else {
+    // Use regular product listing
+    const queryParams: PaginatedProductsParams = {
+      limit: PRODUCT_LIMIT,
+    }
+
+    if (collectionId) {
+      queryParams["collection_id"] = [collectionId]
+    }
+
+    if (categoryId) {
+      queryParams["category_id"] = [categoryId]
+    }
+
+    if (productsIds) {
+      queryParams["id"] = productsIds
+    }
+
+    if (sortBy === "created_at") {
+      queryParams["order"] = "created_at"
+    }
+
+    const result = await listProductsWithSort({
+      page,
+      queryParams,
+      sortBy,
+      countryCode,
+    })
+
+    products = result.response.products
+    count = result.response.count
+    nextPage = result.nextPage
+  }
 
   const totalPages = Math.ceil(count / PRODUCT_LIMIT)
 

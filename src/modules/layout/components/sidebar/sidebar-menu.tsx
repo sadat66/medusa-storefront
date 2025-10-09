@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useRef } from "react"
 import { Transition } from "@headlessui/react"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import SearchBar from "@modules/common/components/search-bar"
 
 interface SidebarMenuProps {
   isOpen: boolean
@@ -88,6 +89,15 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-blue-200">
               <h2 className="text-lg font-semibold text-blue-900">Menu</h2>
+            </div>
+
+            {/* Search Bar */}
+            <div className="px-6 py-4 border-b border-blue-200">
+              <SearchBar 
+                className="w-full" 
+                placeholder="Search products..."
+                showButton={true}
+              />
             </div>
 
             {/* Menu Items */}
