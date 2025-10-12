@@ -44,8 +44,11 @@ export async function retrieveCart(cartId?: string, fields?: string) {
         fields
       },
       headers,
-      next,
-      cache: "force-cache",
+      next: {
+        ...next,
+        revalidate: 0 // Force revalidation
+      },
+      cache: "no-store", // Disable caching to ensure fresh data
     })
     .then(({ cart }: { cart: HttpTypes.StoreCart }) => cart)
     .catch(() => null)
@@ -273,11 +276,19 @@ export async function applyPromotions(codes: string[]) {
   return sdk.store.cart
     .update(cartId, { promo_codes: codes }, {}, headers)
     .then(async () => {
+      // Clear all relevant caches
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag)
 
       const fulfillmentCacheTag = await getCacheTag("fulfillment")
       revalidateTag(fulfillmentCacheTag)
+
+      // Also clear promotion-related caches
+      const promotionCacheTag = await getCacheTag("promotions")
+      revalidateTag(promotionCacheTag)
+
+      // Force revalidation of the specific cart
+      revalidateTag(`cart-${cartId}`)
     })
     .catch(medusaError)
 }

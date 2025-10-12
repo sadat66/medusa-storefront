@@ -10,6 +10,9 @@ function CartMismatchBanner(props: {
   customer: StoreCustomer
   cart: StoreCart
 }) {
+  // Banner disabled for now
+  return null
+  
   const { customer, cart } = props
   const [isPending, setIsPending] = useState(false)
   const [actionText, setActionText] = useState("Run transfer again")
@@ -24,9 +27,18 @@ function CartMismatchBanner(props: {
       setActionText("Transferring..")
 
       await transferCart()
-    } catch {
-      setActionText("Run transfer again")
+      
+      // If successful, hide the banner by refreshing the page
+      window.location.reload()
+    } catch (error) {
+      console.error("Cart transfer failed:", error)
+      setActionText("Transfer failed - Try again")
       setIsPending(false)
+      
+      // Show error message for a few seconds, then reset
+      setTimeout(() => {
+        setActionText("Run transfer again")
+      }, 3000)
     }
   }
 

@@ -13,7 +13,9 @@ import {
   removeAuthToken,
   removeCartId,
   setAuthToken,
+  setCartId,
 } from "./cookies"
+import { getRegion } from "./regions"
 
 export const retrieveCustomer =
   async (): Promise<HttpTypes.StoreCustomer | null> => {
@@ -147,15 +149,55 @@ export async function transferCart() {
   const cartId = await getCartId()
 
   if (!cartId) {
-    return
+    throw new Error("No cart found to transfer")
   }
 
-  const headers = await getAuthHeaders()
+  try {
+    const headers = await getAuthHeaders()
 
-  await sdk.store.cart.transferCart(cartId, {}, headers)
+    // Check if cart already has a customer_id
+    const cart = await sdk.client.fetch(`/store/carts/${cartId}`, {
+      method: "GET",
+      headers,
+      query: {
+        fields: "id,customer_id"
+      }
+    })
 
-  const cartCacheTag = await getCacheTag("carts")
-  revalidateTag(cartCacheTag)
+    if (cart.cart?.customer_id) {
+      // Cart already has a customer, no need to transfer
+      return
+    }
+
+    await sdk.store.cart.transferCart(cartId, {}, headers)
+
+    const cartCacheTag = await getCacheTag("carts")
+    revalidateTag(cartCacheTag)
+  } catch (error) {
+    console.error("Cart transfer failed:", error)
+    
+    // If transfer fails, try to create a new cart for the customer
+    try {
+      const headers = await getAuthHeaders()
+      const region = await getRegion("us") // Default region
+      
+      if (region) {
+        const newCartResp = await sdk.store.cart.create(
+          { region_id: region.id },
+          {},
+          headers
+        )
+        
+        await setCartId(newCartResp.cart.id)
+        
+        const cartCacheTag = await getCacheTag("carts")
+        revalidateTag(cartCacheTag)
+      }
+    } catch (fallbackError) {
+      console.error("Failed to create new cart:", fallbackError)
+      throw new Error("Unable to transfer or create cart")
+    }
+  }
 }
 
 export const addCustomerAddress = async (

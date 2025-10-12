@@ -24,13 +24,18 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
   const router = useRouter()
 
   const { promotions = [] } = cart
+  
+  // Ensure promotions is an array and filter out any null/undefined items
+  const validPromotions = Array.isArray(promotions) 
+    ? promotions.filter(promotion => promotion && promotion.id) 
+    : []
   const removePromotionCode = async (code: string) => {
-    const validPromotions = promotions.filter(
+    const remainingPromotions = validPromotions.filter(
       (promotion) => promotion.code !== code
     )
 
     await applyPromotions(
-      validPromotions.filter((p) => p.code !== undefined).map((p) => p.code!)
+      remainingPromotions.map((p) => p.code!)
     )
     
     // Refresh the page to show updated cart data
@@ -109,14 +114,23 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
           )}
         </form>
 
-        {promotions.length > 0 && (
+        {validPromotions.length > 0 && (
           <div className="w-full flex items-center">
             <div className="flex flex-col w-full">
-              <Heading className="txt-medium mb-2">
-                Promotion(s) applied:
-              </Heading>
+              <div className="flex items-center justify-between mb-2">
+                <Heading className="txt-medium">
+                  Promotion(s) applied:
+                </Heading>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                  title="Refresh page to see updated totals"
+                >
+                  Refresh Page
+                </button>
+              </div>
 
-              {promotions.map((promotion) => {
+              {validPromotions.map((promotion) => {
                 return (
                   <div
                     key={promotion.id}
@@ -126,13 +140,13 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                     <Text className="flex gap-x-1 items-baseline txt-small-plus w-4/5 pr-1">
                       <span className="truncate" data-testid="discount-code">
                         <Badge
-                          color={promotion.is_automatic ? "green" : "grey"}
+                          color={promotion?.is_automatic ? "green" : "grey"}
                           size="small"
                         >
-                          {promotion.code}
+                          {promotion?.code || "Unknown"}
                         </Badge>{" "}
                         (
-                        {promotion.application_method?.value !== undefined &&
+                        {promotion?.application_method?.value !== undefined &&
                           promotion.application_method.currency_code !==
                             undefined && (
                             <>
@@ -148,24 +162,25 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                             </>
                           )}
                         )
-                        {/* {promotion.is_automatic && (
+                        {/* {promotion?.is_automatic && (
                           <Tooltip content="This promotion is automatically applied">
                             <InformationCircleSolid className="inline text-zinc-400" />
                           </Tooltip>
                         )} */}
                       </span>
                     </Text>
-                    {!promotion.is_automatic && (
+                    {promotion && !promotion.is_automatic && (
                       <button
-                        className="flex items-center"
+                        className="flex items-center text-red-500 hover:text-red-700 p-1 rounded"
                         onClick={() => {
-                          if (!promotion.code) {
+                          if (!promotion?.code) {
                             return
                           }
 
                           removePromotionCode(promotion.code)
                         }}
                         data-testid="remove-discount-button"
+                        title="Remove promotion"
                       >
                         <Trash size={14} />
                         <span className="sr-only">
