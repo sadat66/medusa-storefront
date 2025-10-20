@@ -106,6 +106,15 @@ async function getCountryCode(
 export async function middleware(request: NextRequest) {
   let redirectUrl = request.nextUrl.href
 
+  // Validate that the request URL is valid
+  try {
+    new URL(request.nextUrl.href)
+  } catch (urlError) {
+    console.error('Invalid request URL in middleware:', request.nextUrl.href, urlError)
+    // Return a safe response
+    return new NextResponse("Invalid URL", { status: 400 })
+  }
+
   let response = NextResponse.redirect(redirectUrl, 307)
 
   let cacheIdCookie = request.cookies.get("_medusa_cache_id")
@@ -117,7 +126,7 @@ export async function middleware(request: NextRequest) {
   const countryCode = regionMap && (await getCountryCode(request, regionMap))
 
   const urlHasCountryCode =
-    countryCode && request.nextUrl.pathname.split("/")[1].includes(countryCode)
+    countryCode && request.nextUrl.pathname.split("/")[1] === countryCode
 
   // if one of the country codes is in the url and the cache id is set, return next
   if (urlHasCountryCode && cacheIdCookie) {
@@ -145,8 +154,27 @@ export async function middleware(request: NextRequest) {
 
   // If no country code is set, we redirect to the relevant region.
   if (!urlHasCountryCode && countryCode) {
-    redirectUrl = `${request.nextUrl.origin}/${countryCode}${redirectPath}${queryString}`
-    response = NextResponse.redirect(`${redirectUrl}`, 307)
+    // Check if the path already has a valid country code (like /us/order/confirmation)
+    const pathSegments = request.nextUrl.pathname.split('/')
+    const firstSegment = pathSegments[1]
+    
+    // If the first segment is a valid country code, don't redirect
+    if (firstSegment && firstSegment.length === 2 && firstSegment !== countryCode) {
+      // The URL already has a different country code, don't redirect
+      console.log('URL already has country code:', firstSegment, 'detected:', countryCode)
+      return NextResponse.next()
+    }
+    
+    try {
+      redirectUrl = `${request.nextUrl.origin}/${countryCode}${redirectPath}${queryString}`
+      response = NextResponse.redirect(`${redirectUrl}`, 307)
+    } catch (urlError) {
+      console.error('Error constructing redirect URL in middleware:', urlError)
+      // Fallback to a safe redirect
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000'
+      redirectUrl = `${baseUrl}/${countryCode}${redirectPath}${queryString}`
+      response = NextResponse.redirect(`${redirectUrl}`, 307)
+    }
   } else if (!urlHasCountryCode && !countryCode) {
     // Handle case where no valid country code exists (empty regions)
     return new NextResponse(
@@ -160,6 +188,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp|order/confirmation).*)",
   ],
 }

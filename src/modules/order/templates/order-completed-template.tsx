@@ -26,7 +26,8 @@ export default async function OrderCompletedTemplate({
     <div className="py-6 min-h-[calc(100vh-64px)]">
       <OrderSuccessToast orderId={order.display_id || order.id} />
       <div className="content-container flex flex-col justify-center items-center gap-y-10 max-w-4xl h-full w-full">
-        {isOnboarding && <OnboardingCta orderId={order.id} />}
+        {/* Temporarily disabled to debug URL issue */}
+        {/* {isOnboarding && <OnboardingCta orderId={order.id} />} */}
         <div
           className="flex flex-col gap-4 max-w-4xl h-full bg-white w-full py-10"
           data-testid="order-complete-container"

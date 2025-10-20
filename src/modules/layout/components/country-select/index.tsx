@@ -33,7 +33,10 @@ const CountrySelect = ({ toggleState, regions }: CountrySelectProps) => {
   >(undefined)
 
   const { countryCode } = useParams()
-  const currentPath = usePathname().split(`/${countryCode}`)[1]
+  
+  // Ensure countryCode is valid, fallback to 'us' if null/undefined
+  const safeCountryCode = countryCode && typeof countryCode === 'string' ? countryCode : 'us'
+  const currentPath = usePathname().split(`/${safeCountryCode}`)[1]
 
   const { state, close } = toggleState
 

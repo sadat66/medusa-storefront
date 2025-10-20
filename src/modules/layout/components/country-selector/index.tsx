@@ -22,7 +22,10 @@ interface CountrySelectorProps {
 export default function CountrySelector({ regions, className = "" }: CountrySelectorProps) {
   const [selected, setSelected] = useState<CountryOption | null>(null)
   const { countryCode } = useParams()
-  const currentPath = usePathname().split(`/${countryCode}`)[1]
+  
+  // Ensure countryCode is valid, fallback to 'us' if null/undefined
+  const safeCountryCode = countryCode && typeof countryCode === 'string' ? countryCode : 'us'
+  const currentPath = usePathname().split(`/${safeCountryCode}`)[1]
 
   const options = regions
     ?.map((r) => {

@@ -2,8 +2,12 @@ export default function medusaError(error: any): never {
   if (error.response) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
-    const u = new URL(error.config.url, error.config.baseURL)
-    console.error("Resource:", u.toString())
+    try {
+      const u = new URL(error.config.url, error.config.baseURL)
+      console.error("Resource:", u.toString())
+    } catch (urlError) {
+      console.error("Resource URL construction failed:", error.config.url, error.config.baseURL)
+    }
     console.error("Response data:", error.response.data)
     console.error("Status code:", error.response.status)
     console.error("Headers:", error.response.headers)
