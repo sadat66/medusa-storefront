@@ -1,6 +1,6 @@
 "use client"
 
-import { isManual, isStripe, isMoneybag } from "@lib/constants"
+import { isManual, isStripe, isSSLCommerz } from "@lib/constants"
 import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@medusajs/ui"
@@ -39,10 +39,10 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
       return (
         <ManualTestPaymentButton notReady={notReady} data-testid={dataTestId} />
       )
-    case isMoneybag(paymentSession?.provider_id):
+    case isSSLCommerz(paymentSession?.provider_id):
       return (
         <Button disabled>
-          Payment handled by Moneybag
+          Payment handled by SSLCommerz
         </Button>
       )
     default:

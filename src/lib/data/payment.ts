@@ -25,9 +25,9 @@ export const listCartPaymentMethods = async (regionId: string) => {
       }
     )
     .then(({ payment_providers }) => {
-      // Add Moneybag as a custom payment method
-      const moneybagProvider = {
-        id: "moneybag",
+      // Add SSLCommerz as a custom payment method
+      const sslcommerzProvider = {
+        id: "sslcommerz",
         is_enabled: true,
         is_installed: true,
         regions: [{ id: regionId }],
@@ -37,16 +37,16 @@ export const listCartPaymentMethods = async (regionId: string) => {
         version: 1,
       }
 
-      const allProviders = [...payment_providers, moneybagProvider]
+      const allProviders = [...payment_providers, sslcommerzProvider]
       
       return allProviders.sort((a, b) => {
         return a.id > b.id ? 1 : -1
       })
     })
     .catch(() => {
-      // Even if Medusa providers fail, return Moneybag
+      // Even if Medusa providers fail, return SSLCommerz
       return [{
-        id: "moneybag",
+        id: "sslcommerz",
         is_enabled: true,
         is_installed: true,
         regions: [{ id: regionId }],

@@ -15,18 +15,18 @@ type SSLCommerzPaymentProps = {
   paymentProviderId?: string
 }
 
-const MoneybagPayment: React.FC<SSLCommerzPaymentProps> = ({
+const SSLCommerzPayment: React.FC<SSLCommerzPaymentProps> = ({
   cart,
   customer,
   onPaymentInitiated,
   onError,
   disabled = false,
   selectedPaymentOptionId,
-  paymentProviderId = "moneybag"
+  paymentProviderId = "sslcommerz"
 }) => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleMoneybagPayment = async () => {
+  const handleSSLCommerzPayment = async () => {
     if (!cart || !cart.shipping_address || !cart.billing_address) {
       onError?.("Please complete shipping and billing information first")
       return
@@ -35,7 +35,7 @@ const MoneybagPayment: React.FC<SSLCommerzPaymentProps> = ({
     setIsLoading(true)
     
     try {
-      const response = await fetch('/api/moneybag-payment', {
+      const response = await fetch('/api/sslcommerz-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ const MoneybagPayment: React.FC<SSLCommerzPaymentProps> = ({
       }
 
       if (data.success && data.gateway_url) {
-        // Redirect to Moneybag gateway
+        // Redirect to SSLCommerz gateway
         window.location.href = data.gateway_url
         onPaymentInitiated?.(data.gateway_url)
       } else {
@@ -62,7 +62,7 @@ const MoneybagPayment: React.FC<SSLCommerzPaymentProps> = ({
       }
 
     } catch (error) {
-      console.error('Moneybag payment error:', error)
+      console.error('SSLCommerz payment error:', error)
       onError?.(error instanceof Error ? error.message : 'Payment initialization failed')
     } finally {
       setIsLoading(false)
@@ -83,7 +83,7 @@ const MoneybagPayment: React.FC<SSLCommerzPaymentProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-4">
           <Radio checked={selectedPaymentOptionId === paymentProviderId} />
-          <Text className="text-base-regular">Moneybag</Text>
+          <Text className="text-base-regular">SSLCommerz</Text>
         </div>
         <span className="justify-self-end text-ui-fg-base">
           <CreditCard className="h-6 w-6" />
@@ -92,15 +92,15 @@ const MoneybagPayment: React.FC<SSLCommerzPaymentProps> = ({
       
       {selectedPaymentOptionId === paymentProviderId && (
         <div className="mt-4">
-          <Text className="text-small-regular text-ui-fg-subtle mb-4">Pay securely with Moneybag. You will be redirected to their secure payment gateway.</Text>
+          <Text className="text-small-regular text-ui-fg-subtle mb-4">Pay securely with SSLCommerz. You will be redirected to their secure payment gateway.</Text>
           
           <Button
-            onClick={handleMoneybagPayment}
+            onClick={handleSSLCommerzPayment}
             disabled={isLoading || disabled}
             size="large"
             className="w-full"
           >
-            {isLoading ? "Processing..." : "Pay with Moneybag"}
+            {isLoading ? "Processing..." : "Pay with SSLCommerz"}
           </Button>
         </div>
       )}
@@ -108,4 +108,4 @@ const MoneybagPayment: React.FC<SSLCommerzPaymentProps> = ({
   )
 }
 
-export default MoneybagPayment
+export default SSLCommerzPayment

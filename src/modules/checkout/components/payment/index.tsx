@@ -1,7 +1,7 @@
 "use client"
 
 import { RadioGroup } from "@headlessui/react"
-import { isStripe as isStripeFunc, isMoneybag, paymentInfoMap } from "@lib/constants"
+import { isStripe as isStripeFunc, isSSLCommerz, paymentInfoMap } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
 import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
 import { Button, Container, Heading, Text, clx } from "@medusajs/ui"
@@ -9,7 +9,7 @@ import ErrorMessage from "@modules/checkout/components/error-message"
 import PaymentContainer, {
   StripeCardContainer,
 } from "@modules/checkout/components/payment-container"
-import MoneybagPayment from "@modules/checkout/components/sslcommerz-payment"
+import SSLCommerzPayment from "@modules/checkout/components/sslcommerz-payment"
 import Divider from "@modules/common/components/divider"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
@@ -49,8 +49,8 @@ const Payment = ({
         provider_id: method,
       })
     }
-    // Moneybag doesn't need payment session initiation
-    // It will be handled directly in the MoneybagPayment component
+    // SSLCommerz doesn't need payment session initiation
+    // It will be handled directly in the SSLCommerzPayment component
   }
 
   const paidByGiftcard =
@@ -59,7 +59,7 @@ const Payment = ({
   const paymentReady =
     (activeSession && cart?.shipping_methods.length !== 0) ||
     paidByGiftcard ||
-    (isMoneybag(selectedPaymentMethod) && cart?.shipping_methods.length !== 0)
+    (isSSLCommerz(selectedPaymentMethod) && cart?.shipping_methods.length !== 0)
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -158,8 +158,8 @@ const Payment = ({
                         setError={setError}
                         setCardComplete={setCardComplete}
                       />
-                    ) : isMoneybag(paymentMethod.id) ? (
-                      <MoneybagPayment
+                    ) : isSSLCommerz(paymentMethod.id) ? (
+                      <SSLCommerzPayment
                         cart={cart}
                         customer={null}
                         selectedPaymentOptionId={selectedPaymentMethod}

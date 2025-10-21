@@ -101,11 +101,22 @@ Your site is now running at http://localhost:8000!
 By default this starter supports the following payment integrations
 
 - [Stripe](https://stripe.com/)
+- [SSLCommerz](https://www.sslcommerz.com/)
 
 To enable the integrations you need to add the following to your `.env.local` file:
 
 ```shell
 NEXT_PUBLIC_STRIPE_KEY=<your-stripe-public-key>
+```
+
+For SSLCommerz integration, add these environment variables to your Medusa backend:
+
+```shell
+SSLCOMMERZ_STORE_ID=<your-sslcommerz-store-id>
+SSLCOMMERZ_STORE_PASSWORD=<your-sslcommerz-store-password>
+SSLCOMMERZ_API_URL=https://sandbox.sslcommerz.com/gwprocess/v4/api.php
+SSLCOMMERZ_VERIFY_URL=https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php
+FRONTEND_URL=http://localhost:8000
 ```
 
 You'll also need to setup the integrations in your Medusa server. See the [Medusa documentation](https://docs.medusajs.com) for more information on how to configure [Stripe](https://docs.medusajs.com/resources/commerce-modules/payment/payment-provider/stripe#main).
