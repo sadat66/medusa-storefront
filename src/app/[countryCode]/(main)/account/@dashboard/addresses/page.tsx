@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { redirect } from "next/navigation"
 
 import AddressBook from "@modules/account/components/address-book"
 
@@ -16,11 +16,15 @@ export default async function Addresses(props: {
 }) {
   const params = await props.params
   const { countryCode } = params
-  const customer = await retrieveCustomer()
+  const customer = await retrieveCustomer().catch(() => null)
   const region = await getRegion(countryCode)
 
-  if (!customer || !region) {
-    notFound()
+  if (!customer) {
+    redirect("/es/account")
+  }
+  
+  if (!region) {
+    redirect("/es/account")
   }
 
   return (

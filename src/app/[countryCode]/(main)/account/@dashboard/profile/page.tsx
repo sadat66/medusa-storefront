@@ -6,7 +6,7 @@ import ProfileEmail from "@modules/account/components/profile-email"
 import ProfileName from "@modules/account/components/profile-name"
 import ProfilePassword from "@modules/account/components/profile-password"
 
-import { notFound } from "next/navigation"
+import { redirect } from "next/navigation"
 import { listRegions } from "@lib/data/regions"
 import { retrieveCustomer } from "@lib/data/customer"
 
@@ -16,11 +16,15 @@ export const metadata: Metadata = {
 }
 
 export default async function Profile() {
-  const customer = await retrieveCustomer()
+  const customer = await retrieveCustomer().catch(() => null)
   const regions = await listRegions()
 
-  if (!customer || !regions) {
-    notFound()
+  if (!customer) {
+    redirect("/es/account")
+  }
+  
+  if (!regions) {
+    redirect("/es/account")
   }
 
   return (

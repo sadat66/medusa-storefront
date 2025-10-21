@@ -1,8 +1,9 @@
 import { Metadata } from "next"
 
 import OrderOverview from "@modules/account/components/order-overview"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { listOrders } from "@lib/data/orders"
+import { retrieveCustomer } from "@lib/data/customer"
 import Divider from "@modules/common/components/divider"
 import TransferRequestForm from "@modules/account/components/transfer-request-form"
 import { Pagination } from "@modules/store/components/pagination"
@@ -19,6 +20,14 @@ export default async function Orders({
 }: {
   searchParams: { page?: string }
 }) {
+  // Check if user is authenticated
+  const customer = await retrieveCustomer().catch(() => null)
+  
+  if (!customer) {
+    // Redirect to login if not authenticated
+    redirect("/es/account")
+  }
+
   const page = parseInt(searchParams.page || "1")
   const offset = (page - 1) * ORDERS_PER_PAGE
 
