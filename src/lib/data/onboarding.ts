@@ -8,7 +8,7 @@ export async function resetOnboardingState(orderId: string) {
     cookies.set("_medusa_onboarding", "false", { maxAge: -1 })
     
     // Use environment variable for admin URL with fallback
-    const adminUrl = process.env.MEDUSA_ADMIN_URL || 'http://localhost:7001'
+    const adminUrl = process.env.MEDUSA_ADMIN_URL || 'http://localhost:9000'
     const redirectUrl = `${adminUrl}/a/orders/${orderId}`
     
     // Validate the URL before redirecting

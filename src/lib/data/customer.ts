@@ -156,7 +156,7 @@ export async function transferCart() {
     const headers = await getAuthHeaders()
 
     // Check if cart already has a customer_id
-    const cart = await sdk.client.fetch(`/store/carts/${cartId}`, {
+    const cart = await sdk.client.fetch<{ cart: { id: string; customer_id?: string } }>(`/store/carts/${cartId}`, {
       method: "GET",
       headers,
       query: {

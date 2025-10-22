@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('=== Create Order From Success Called ===')
     const { tran_id, amount, status } = await request.json();
+    console.log('Received data:', { tran_id, amount, status })
 
     if (!tran_id || !status) {
       return NextResponse.json(
@@ -15,7 +17,14 @@ export async function POST(request: NextRequest) {
 
     // Get the backend URL
     const backendUrl = process.env.MEDUSA_BACKEND_URL || 'http://localhost:9000';
-    const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || 'pk_14f1f0c0f7790afc27fe5a1ef5d5b4a81f9e056000f04543bc76db8bd8bc66a1';
+    const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY;
+
+    if (!publishableKey) {
+      return NextResponse.json(
+        { error: 'Publishable key not configured' },
+        { status: 500 }
+      );
+    }
 
     // First, try to get the payment session to extract the cart_id
     console.log('Looking for payment session for transaction:', tran_id);
@@ -31,13 +40,18 @@ export async function POST(request: NextRequest) {
         }
       });
       
+      console.log('Session response status:', sessionResponse.status);
+      
       if (sessionResponse.ok) {
         const sessionData = await sessionResponse.json();
         paymentSession = sessionData.session;
         console.log('Found payment session:', paymentSession);
+      } else {
+        const errorText = await sessionResponse.text();
+        console.log('No payment session found for transaction:', tran_id, 'Error:', errorText);
       }
     } catch (error) {
-      console.log('Could not fetch payment session from backend:', error.message);
+      console.log('Could not fetch payment session from backend:', error instanceof Error ? error.message : String(error));
     }
 
     // If no payment session found, try to reconstruct from available data
@@ -109,18 +123,22 @@ export async function POST(request: NextRequest) {
     };
 
     console.log('Triggering webhook with data:', webhookData);
+    console.log('Webhook URL:', `${backendUrl}/webhooks/sslcommerz`);
 
     // Trigger the webhook
     const webhookResponse = await fetch(`${backendUrl}/webhooks/sslcommerz`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
-      body: new URLSearchParams(webhookData).toString()
+      body: JSON.stringify(webhookData)
     });
 
+    console.log('Webhook response status:', webhookResponse.status);
+    console.log('Webhook response headers:', Object.fromEntries(webhookResponse.headers.entries()));
+    
     const webhookResult = await webhookResponse.text();
-    console.log('Webhook response:', webhookResult);
+    console.log('Webhook response body:', webhookResult);
 
     if (webhookResponse.ok) {
       try {
@@ -181,7 +199,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating order from success URL:', error);
     return NextResponse.json(
-      { error: 'Internal server error', message: error.message },
+      { error: 'Internal server error', message: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

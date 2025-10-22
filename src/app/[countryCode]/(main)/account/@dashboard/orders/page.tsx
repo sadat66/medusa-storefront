@@ -18,7 +18,7 @@ const ORDERS_PER_PAGE = 5
 export default async function Orders({
   searchParams,
 }: {
-  searchParams: { page?: string }
+  searchParams: Promise<{ page?: string }>
 }) {
   // Check if user is authenticated
   const customer = await retrieveCustomer().catch(() => null)
@@ -28,7 +28,8 @@ export default async function Orders({
     redirect("/es/account")
   }
 
-  const page = parseInt(searchParams.page || "1")
+  const resolvedSearchParams = await searchParams
+  const page = parseInt(resolvedSearchParams.page || "1")
   const offset = (page - 1) * ORDERS_PER_PAGE
 
   const { orders, count } = await listOrders(ORDERS_PER_PAGE, offset)

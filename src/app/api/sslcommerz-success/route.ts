@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getOrigin } from '@lib/util/get-origin';
 
 export async function GET(request: NextRequest) {
+  console.log('=== SSLCommerz Success Handler GET Called ===');
+  console.log('Request URL:', request.url);
+  
   const url = new URL(request.url);
   const searchParams = url.searchParams;
   
@@ -13,6 +16,7 @@ export async function GET(request: NextRequest) {
 
   // Get the origin for proper URL construction
   const origin = getOrigin(request);
+  const backendUrl = process.env.MEDUSA_BACKEND_URL || 'http://localhost:9000';
 
   // Create a simple HTML page that SSLCommerz can process
   const html = `
@@ -44,10 +48,11 @@ export async function GET(request: NextRequest) {
                     console.log('Processing successful payment:', { tran_id, amount, status });
                     
                     if (tran_id && status === 'VALID') {
+                        console.log('Status is VALID, proceeding with order creation...');
                         // First, try to create the order if it doesn't exist
                         console.log('Attempting to create order from success URL...');
                         
-                        const createOrderResponse = await fetch('${origin}/api/create-order-from-success', {
+                        const createOrderResponse = await fetch('${backendUrl}/store/custom/direct-order-creation', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -114,6 +119,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  console.log('=== SSLCommerz Success Handler POST Called ===');
+  console.log('Request URL:', request.url);
+  
   // Handle POST requests from SSLCommerz
   const formData = await request.formData();
   
@@ -125,6 +133,7 @@ export async function POST(request: NextRequest) {
 
   // Get the origin for proper URL construction
   const origin = getOrigin(request);
+  const backendUrl = process.env.MEDUSA_BACKEND_URL || 'http://localhost:9000';
 
   // Create a simple HTML page that SSLCommerz can process
   const html = `
@@ -156,10 +165,11 @@ export async function POST(request: NextRequest) {
                     console.log('Processing successful payment:', { tran_id, amount, status });
                     
                     if (tran_id && status === 'VALID') {
+                        console.log('Status is VALID, proceeding with order creation...');
                         // First, try to create the order if it doesn't exist
                         console.log('Attempting to create order from success URL...');
                         
-                        const createOrderResponse = await fetch('${origin}/api/create-order-from-success', {
+                        const createOrderResponse = await fetch('${backendUrl}/store/custom/direct-order-creation', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'

@@ -212,14 +212,15 @@ export async function deleteLineItem(lineId: string) {
 
   return await sdk.store.cart
     .deleteLineItem(cartId, lineId, headers)
-    .then(async ({ cart: updatedCart }) => {
+    .then(async () => {
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag)
 
       const fulfillmentCacheTag = await getCacheTag("fulfillment")
       revalidateTag(fulfillmentCacheTag)
 
-      return updatedCart
+      // Fetch the updated cart
+      return await retrieveCart(cartId)
     })
     .catch(medusaError)
 }
@@ -451,7 +452,7 @@ export async function placeOrder(cartId?: string) {
       
       await sendOrderConfirmationEmail({
         order: cartRes.order,
-        customerEmail: cartRes.order.email,
+        customerEmail: cartRes.order.email || '',
         customerName,
       })
     } catch (error) {
